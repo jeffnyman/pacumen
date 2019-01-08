@@ -5,6 +5,7 @@
 
 <h3 align="center">Exploring Artificial Intelligence with Pac-Man</h3>
 
+
 ---
 
 > "We do not wish to penalise the machine for its inability to shine in beauty competitions, nor to penalise a man for losing in a race against an aeroplane."<br>
@@ -41,13 +42,13 @@ You can use the [pip package manager](https://pip.pypa.io/) to install the appli
 pip3 install .
 ```
 
-By default, pip will install Python packages to a system directory. You acn have pip install packages in your home directory instead, as such:
+By default, pip will install Python packages to a system directory. You can have pip install packages in your home directory instead, as such:
 
 ```
 python3 -m pip install --user .
 ``` 
     
-With either approach the application is then available with the command `pacumen`.
+With either approach the application is then available as a distinct application that can be called from anywhere on your file system.
 
 After install via pip, you can do this:
 

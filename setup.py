@@ -42,7 +42,8 @@ except FileNotFoundError:
 about = {}
 
 if not VERSION:
-    with open(os.path.join(here, NAME, '__version__.py')) as f:
+    project_slug = NAME.lower().replace("-", "_").replace(" ", "_")
+    with open(os.path.join(here, project_slug, '__version__.py')) as f:
         exec(f.read(), about)
         about['__version__'] = '.'.join(map(str, about['VERSION']))
 else:
@@ -116,7 +117,7 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     license='MIT',
-    packages=['quendor'],
+    packages=['pacumen'],
     zip_safe=False,
     include_package_data=True,
     python_requires=REQUIRES_PYTHON,
