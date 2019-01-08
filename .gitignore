@@ -1,0 +1,74 @@
+# Byte-compiled / optimized / DLL files
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+
+*.so
+
+# Environments
+
+.env
+.venv
+env/
+venv/
+.python-version
+
+# Distribution / Packaging
+
+eggs/
+.eggs/
+wheels/
+*.egg-info/
+*.egg
+develop-eggs/
+.Python
+build/
+dist/
+downloads/
+lib/
+lib64/
+parts/
+sdist/
+var/
+.installed.cfg
+*.manifest
+*.spec
+
+# Installer logs
+
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDE files
+
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.metadata
+.classpath
+.loadpath
+.buildpath
+.project
+*.pydevproject
+
+# OS Files
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+$RECYCLE.BIN/
+Desktop.ini
+*.tmp
+*.bak
+*.swp
+*~.nib
