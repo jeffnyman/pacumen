@@ -2,8 +2,7 @@ import sys
 import argparse
 import textwrap
 
-from .mechanics import layout
-
+from pacumen.mechanics import layout
 
 if sys.version_info < (3, 0):
     sys.stderr.write("Pacumen requires Python 3.\n")

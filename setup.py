@@ -117,7 +117,10 @@ setup(
     author=AUTHOR,
     author_email=EMAIL,
     license='MIT',
-    packages=['pacumen'],
+    packages=[
+        'pacumen',
+        'pacumen.mechanics'
+    ],
     zip_safe=False,
     include_package_data=True,
     python_requires=REQUIRES_PYTHON,
