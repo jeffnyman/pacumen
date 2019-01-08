@@ -40,8 +40,23 @@ def process_command(arguments):
 
     core_opt.add_argument("-l", "--layout", dest="layout", default="test_maze", help=argparse.SUPPRESS)
 
+    # ==============
+
+    verify_functions = ["layout"]
+
+    parser.add_argument("--verify", dest="verify", default=None,
+                        choices=verify_functions, metavar='',
+                        help="verify aspects of functionality; allowed values: " +
+                             ", ".join(verify_functions) + " (default: %(default)s)")
+
+    # ==============
+
     options = parser.parse_args(arguments)
     args = dict()
+
+    if options.verify:
+        verify_functionality(arguments[1])
+        sys.exit(1)
 
     # A game layout has to be specified and found. This is a bare minimum
     # starting condition. Without a layout, which corresponds to a game
@@ -53,6 +68,24 @@ def process_command(arguments):
         raise Exception("The layout " + options.layout + " could not be found.")
 
     return args
+
+
+def verify_layout():
+    from pacumen.mechanics import layout
+    layout.test()
+
+
+def verify_functionality(argument):
+    options = {
+        "layout": verify_layout
+    }
+
+    try:
+        options[argument]()
+    except IndexError:
+        print("Provide a valid test function name.")
+    except KeyError as key_name:
+        print("Unable to execute test function:", key_name)
 
 
 def main():

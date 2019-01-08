@@ -44,3 +44,9 @@ def get_layout(name, back_path=1):
         os.chdir(current_directory)
 
     return layout
+
+
+def test():
+    game_layout = get_layout("testing")
+    print("Layout as read from file:")
+    print(game_layout)
