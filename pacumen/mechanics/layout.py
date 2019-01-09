@@ -1,5 +1,6 @@
 import os
 import random
+import logging
 
 from pacumen.mechanics.grid import Grid
 from pacumen.library.utilities import manhattan_distance
@@ -39,6 +40,8 @@ class Layout:
         self.agent_positions = [(index == 0, position) for index, position in self.agent_positions]
 
     def process_layout_characters(self, x, y, character):
+        logging.debug("x,y: {},{} = {}".format(x, y, character))
+
         if character == "%":
             self.walls[x][y] = True
         elif character == ".":

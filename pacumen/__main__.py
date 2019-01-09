@@ -1,4 +1,5 @@
 import sys
+import logging
 import argparse
 import textwrap
 
@@ -42,6 +43,8 @@ def process_command(arguments):
 
     # ==============
 
+    logging_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
     verify_functions = ["layout"]
 
     parser.add_argument("--verify", dest="verify", default=None,
@@ -49,10 +52,17 @@ def process_command(arguments):
                         help="verify aspects of functionality; allowed values: " +
                              ", ".join(verify_functions) + " (default: %(default)s)")
 
+    parser.add_argument("-v", "--verbose", dest="log_level", default="WARNING",
+                        choices=logging_levels, metavar='',
+                        help="increase output verbosity; allowed values: " +
+                             ", ".join(logging_levels) + " (default: %(default)s)")
+
     # ==============
 
     options = parser.parse_args(arguments)
     args = dict()
+
+    logging.basicConfig(level=logging.getLevelName(options.log_level), format="%(message)s")
 
     if options.verify:
         verify_functionality(arguments[1])
