@@ -119,7 +119,8 @@ setup(
     license='MIT',
     packages=[
         'pacumen',
-        'pacumen.mechanics'
+        'pacumen.mechanics',
+        'pacumen.library'
     ],
     zip_safe=False,
     include_package_data=True,
