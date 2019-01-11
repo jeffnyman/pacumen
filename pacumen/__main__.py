@@ -57,6 +57,22 @@ def process_command(arguments):
 
     # ==============
 
+    learn_opt_desc = """
+    -t, --textDisplay            display game output as text only.
+    
+    -q, --quiet                  generate minimal output, no display.
+    """
+
+    learn_opt = parser.add_argument_group(title='learning options', description=textwrap.dedent(learn_opt_desc))
+
+    learn_opt.add_argument("-t", "--textDisplay", dest="text_display", default=False, action="store_true",
+                           help=argparse.SUPPRESS)
+
+    learn_opt.add_argument("-q", "--quiet", dest="quiet_display", default=False, action="store_true",
+                           help=argparse.SUPPRESS)
+
+    # ==============
+
     env_opt_desc = """
     -k, --numGhosts <number>     the maximum number of ghosts (default: 4).
     
@@ -112,7 +128,8 @@ def process_command(arguments):
     # A pacumen agent has to be loaded. Any agent options that were specified
     # must be sent to this agent object.
 
-    pacman_type = load_agent(options.pacman, False)
+    not_human = options.replay_actions is None and (options.text_display or options.quiet_display)
+    pacman_type = load_agent(options.pacman, not_human)
     agent_opts = parse_agent_options(options.agent_args)
 
     try:
@@ -131,7 +148,7 @@ def process_command(arguments):
     # Load a ghost agent. There can be multiple ghosts in a game but only
     # one type of ghost agent.
 
-    ghost_type = load_agent(options.ghost, False)
+    ghost_type = load_agent(options.ghost, not_human)
     args['ghosts'] = [ghost_type(i + 1) for i in range(options.num_ghosts)]
 
     # Provide a display for the environment.

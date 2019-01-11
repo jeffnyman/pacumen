@@ -83,6 +83,9 @@ class Layout:
         distance, position = max([(manhattan_distance(p, pacumen_position), p) for p in possibles])
         return position
 
+    def deep_copy(self):
+        return Layout(self.layout_text[:])
+
     def __init__(self, layout_text):
         self.layout_text = layout_text
         self.width = len(layout_text[0])
