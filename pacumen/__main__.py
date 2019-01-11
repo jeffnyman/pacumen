@@ -39,6 +39,10 @@ def process_command(arguments):
     -l, --layout <layout_file>   the layout_file providing the environment (default: test_maze).
     
     -p, --pacman <agent>         the agent name to use for Pac-Man (default: HumanAgent).
+    
+    -g, --ghost <agent>          the agent type to use for the ghosts (default: RandomGhost).
+    
+    -a, --agentArgs <values>     comma separated values sent to agent; e.g. "opt1=val1,opt2,opt3=val3"
     """
 
     core_opt = parser.add_argument_group(title='core options', description=textwrap.dedent(core_opt_desc))
@@ -47,7 +51,19 @@ def process_command(arguments):
 
     core_opt.add_argument("-p", "--pacman", dest="pacman", default="HumanAgent", help=argparse.SUPPRESS)
 
+    core_opt.add_argument("-g", "--ghost", dest="ghost", default="RandomGhost", help=argparse.SUPPRESS)
+
     core_opt.add_argument("-a", "--agentArgs", dest="agent_args", help=argparse.SUPPRESS)
+
+    # ==============
+
+    env_opt_desc = """
+    -k, --numGhosts <number>     the maximum number of ghosts (default: 4).
+    """
+
+    env_opt = parser.add_argument_group(title='environment options', description=textwrap.dedent(env_opt_desc))
+
+    env_opt.add_argument("-k", "--numGhosts", dest="num_ghosts", type=int, default=4, help=argparse.SUPPRESS)
 
     # ==============
 
@@ -103,6 +119,12 @@ def process_command(arguments):
         raise
 
     args['pacumen'] = pacman
+
+    # Load a ghost agent. There can be multiple ghosts in a game but only
+    # one type of ghost agent.
+
+    ghost_type = load_agent(options.ghost, False)
+    args['ghosts'] = [ghost_type(i + 1) for i in range(options.num_ghosts)]
 
     return args
 
