@@ -1,15 +1,40 @@
 import os
 import sys
+import random
 import logging
 import argparse
 import textwrap
 import importlib
 
 from pacumen.mechanics import layout
+from pacumen.rules.game_rules import GameRules
+
 
 if sys.version_info < (3, 0):
     sys.stderr.write("Pacumen requires Python 3.\n")
     sys.exit(1)
+
+
+def replay_game(game_layout, game_actions, game_display):
+    from agents_ghost import RandomGhost
+    from agents_pacumen import GreedyAgent
+
+    rules = GameRules()
+
+    # noinspection PyTypeChecker
+    agents = [GreedyAgent()] + [RandomGhost(i + 1) for i in range(game_layout.get_ghost_count())]
+
+    game = rules.new_game(game_layout, agents[0], agents[1:], game_display)
+    state = game.state
+
+    game_display.initialize(state.data)
+
+    for action in game_actions:
+        state = state.generate_successor(*action)
+        game_display.update(state.data)
+        rules.process(state, game)
+
+    game_display.finish()
 
 
 def process_command(arguments):
@@ -58,12 +83,20 @@ def process_command(arguments):
     # ==============
 
     learn_opt_desc = """
+    -n, --numGames <number>      the number of games to play (default: 1).
+    
+    -x, --numTraining <number>   number of training episodes; this suppresses output (default: 0).
+    
     -t, --textDisplay            display game output as text only.
     
     -q, --quiet                  generate minimal output, no display.
     """
 
     learn_opt = parser.add_argument_group(title='learning options', description=textwrap.dedent(learn_opt_desc))
+
+    learn_opt.add_argument("-n", "--numGames", dest="num_games", type=int, default=1, help=argparse.SUPPRESS)
+
+    learn_opt.add_argument("-x", "--numTraining", dest="num_training", type=int, default=0, help=argparse.SUPPRESS)
 
     learn_opt.add_argument("-t", "--textDisplay", dest="text_display", default=False, action="store_true",
                            help=argparse.SUPPRESS)
@@ -79,6 +112,12 @@ def process_command(arguments):
     -f, --frameTime <value>      time to delay between frames; < 0 means keyboard (default: 0.1).
     
     -z, --zoom <value>           control the size of the graphical display (default: 1.0).
+    
+    -r, --recordActions          writes game histories to a file, named by timestamp.
+    
+    --replayActions              runs a recorded game file to replay actions.
+    
+    --fixRandomSeed              sets a random seed to always play the same game.
     """
 
     env_opt = parser.add_argument_group(title='environment options', description=textwrap.dedent(env_opt_desc))
@@ -88,6 +127,14 @@ def process_command(arguments):
     env_opt.add_argument("-f", "--frameTime", dest="frame_time", type=float, default=0.1, help=argparse.SUPPRESS)
 
     env_opt.add_argument("-z", "--zoom", dest="zoom", type=float, default=1.0, help=argparse.SUPPRESS)
+
+    env_opt.add_argument("-r", "--recordActions", dest="record_actions", default=False, action="store_true",
+                         help=argparse.SUPPRESS)
+
+    env_opt.add_argument("--replayActions", dest="replay_actions", default=None, help=argparse.SUPPRESS)
+
+    env_opt.add_argument("--fixRandomSeed", dest="fix_random_seed", default=False, action="store_true",
+                         help=argparse.SUPPRESS)
 
     # ==============
 
@@ -116,6 +163,9 @@ def process_command(arguments):
         verify_functionality(arguments[1])
         sys.exit(1)
 
+    if options.fix_random_seed:
+        random.seed('pacumen')
+
     # A game layout has to be specified and found. This is a bare minimum
     # starting condition. Without a layout, which corresponds to a game
     # board, there will be nowhere to place an agent.
@@ -131,6 +181,11 @@ def process_command(arguments):
     not_human = options.replay_actions is None and (options.text_display or options.quiet_display)
     pacman_type = load_agent(options.pacman, not_human)
     agent_opts = parse_agent_options(options.agent_args)
+
+    if options.num_training > 0:
+        args['num_training'] = options.num_training
+        if 'num_training' not in agent_opts:
+            agent_opts['num_training'] = options.num_training
 
     try:
         pacman = pacman_type(**agent_opts)
@@ -163,6 +218,31 @@ def process_command(arguments):
     else:
         from pacumen.displays import graphical_pacman
         args['game_display'] = graphical_pacman.PacmanDisplay(zoom=options.zoom, frame_time=options.frame_time)
+
+    args['num_games'] = options.num_games
+    args['record_actions'] = options.record_actions
+
+    # Recorded games don't use the run_game method or the argument structure.
+
+    if options.replay_actions is not None:
+        print('Replaying recorded game %s.' % options.replay_actions)
+
+        try:
+            import pickle
+        except ImportError:
+            raise Exception("Pickle not installed.")
+
+        f = open(options.replay_actions)
+
+        try:
+            with open(options.replay_actions, 'rb') as f:
+                recorded = pickle.load(f)
+        finally:
+            f.close()
+
+        recorded['game_display'] = args['game_display']
+        replay_game(**recorded)
+        sys.exit(0)
 
     return args
 
