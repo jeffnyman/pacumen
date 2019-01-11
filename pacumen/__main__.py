@@ -15,6 +15,59 @@ if sys.version_info < (3, 0):
     sys.exit(1)
 
 
+def run_game(game_layout, pacumen, ghosts, game_display, num_games, num_training=0, record_actions=False):
+    """
+    This method is the actual starting point for execution of a game, taking
+    in many values that were passed in as options from the command line. To
+    run a game requires creating a new game, based on certain game rules.
+    """
+    # noinspection PyUnresolvedReferences
+    import __main__
+    __main__.__dict__['board_display'] = game_display
+
+    rules = GameRules()
+    games = []
+
+    for play_session in range(num_games):
+        quiet_execution = play_session < num_training
+
+        if quiet_execution:
+            from pacumen.displays import textual_pacman
+            display = textual_pacman.NoDisplay()
+            rules.quiet = True
+        else:
+            display = game_display
+            rules.quiet = False
+
+        game = rules.new_game(game_layout, pacumen, ghosts, display, quiet_execution)
+        game.run()
+
+        if not quiet_execution:
+            games.append(game)
+
+        if record_actions:
+            import time
+            import pickle
+
+            file_name = ('recorded-game-%d' % (play_session + 1)) + '-'.join([str(t) for t in time.localtime()[1:6]])
+            f = open(file_name, 'wb')
+            components = {'game_layout': game_layout, 'game_actions': game.move_history}
+            pickle.dump(components, f)
+            f.close()
+
+    if num_games - num_training > 0:
+        scores = [game.state.get_score() for game in games]
+        wins = [game.state.is_win() for game in games]
+        win_rate = wins.count(True) / float(len(wins))
+
+        print('Average Score:', sum(scores) / float(len(scores)))
+        print('Scores:       ', ', '.join([str(score) for score in scores]))
+        print('Win Rate:      %d/%d (%.2f)' % (wins.count(True), len(wins), win_rate))
+        print('Record:       ', ', '.join([['Loss', 'Win'][int(w)] for w in wins]))
+
+    return games
+
+
 def replay_game(game_layout, game_actions, game_display):
     from agents_ghost import RandomGhost
     from agents_pacumen import GreedyAgent
@@ -51,6 +104,14 @@ def process_command(arguments):
             The general format is:
             
                 pacumen <options>
+                
+            Examples:
+            
+                (1) pacumen
+                    - starts an interactive game
+                    
+                (2) pacumen --layout small_classic --zoom 2
+                    - starts an interactive game on a smaller board, zoomed in
             """
         ),
         epilog=textwrap.dedent(
@@ -338,6 +399,7 @@ def verify_functionality(argument):
 
 def main():
     kwargs = process_command(sys.argv[1:])
+    run_game(**kwargs)
 
 
 if __name__ == '__main__':
