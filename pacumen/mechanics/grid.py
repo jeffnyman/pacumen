@@ -13,6 +13,32 @@ class Grid:
 
         return grid_list
 
+    def count(self, item=True):
+        return sum([x.count(item) for x in self.data])
+
+    def copy(self):
+        """
+        A grid like this:
+
+            FFFF
+            FTFF
+
+        Would return this:
+
+            [[False, False, False, False], [False, True, False, False]]
+        """
+        g = Grid(self.width, self.height)
+        g.data = [x[:] for x in self.data]
+        return g
+
+    def deep_copy(self):
+        return self.copy()
+
+    def shallow_copy(self):
+        g = Grid(self.width, self.height)
+        g.data = self.data
+        return g
+
     def __init__(self, width, height, initial_value=False):
         if initial_value not in [False, True]:
             raise Exception("Grids can only contain boolean values.")
@@ -60,3 +86,9 @@ class Grid:
                 base *= 2
 
         return hash(hash_value)
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+
+        return self.data == other.data

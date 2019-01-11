@@ -59,17 +59,25 @@ def process_command(arguments):
 
     env_opt_desc = """
     -k, --numGhosts <number>     the maximum number of ghosts (default: 4).
+    
+    -f, --frameTime <value>      time to delay between frames; < 0 means keyboard (default: 0.1).
+    
+    -z, --zoom <value>           control the size of the graphical display (default: 1.0).
     """
 
     env_opt = parser.add_argument_group(title='environment options', description=textwrap.dedent(env_opt_desc))
 
     env_opt.add_argument("-k", "--numGhosts", dest="num_ghosts", type=int, default=4, help=argparse.SUPPRESS)
 
+    env_opt.add_argument("-f", "--frameTime", dest="frame_time", type=float, default=0.1, help=argparse.SUPPRESS)
+
+    env_opt.add_argument("-z", "--zoom", dest="zoom", type=float, default=1.0, help=argparse.SUPPRESS)
+
     # ==============
 
     logging_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
-    verify_functions = ["layout"]
+    verify_functions = ["layout", "game_state", "graphical_builder", "graphical_pacman"]
 
     parser.add_argument("--verify", dest="verify", default=None,
                         choices=verify_functions, metavar='',
@@ -125,6 +133,19 @@ def process_command(arguments):
 
     ghost_type = load_agent(options.ghost, False)
     args['ghosts'] = [ghost_type(i + 1) for i in range(options.num_ghosts)]
+
+    # Provide a display for the environment.
+
+    if options.quiet_display:
+        from pacumen.displays import textual_pacman
+        args['game_display'] = textual_pacman.NoDisplay()
+    elif options.text_display:
+        from pacumen.displays import textual_pacman
+        textual_pacman.SLEEP_TIME = options.frame_time
+        args['game_display'] = textual_pacman.PacmanDisplay()
+    else:
+        from pacumen.displays import graphical_pacman
+        args['game_display'] = graphical_pacman.PacmanDisplay(zoom=options.zoom, frame_time=options.frame_time)
 
     return args
 
@@ -187,8 +208,26 @@ def verify_layout():
     layout.test()
 
 
+def verify_game_state():
+    from pacumen.mechanics import game_state
+    game_state.test()
+
+
+def verify_graphical_builder():
+    from pacumen.displays import graphical_builder
+    graphical_builder.test()
+
+
+def verify_graphical_pacman():
+    from pacumen.displays import graphical_pacman
+    graphical_pacman.test()
+
+
 def verify_functionality(argument):
     options = {
+        "graphical_pacman": verify_graphical_pacman,
+        "graphical_builder": verify_graphical_builder,
+        "game_state": verify_game_state,
         "layout": verify_layout
     }
 

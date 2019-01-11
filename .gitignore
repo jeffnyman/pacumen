@@ -1,3 +1,10 @@
+# Pacumen generated
+display.ps
+display.log
+output.log
+frames/
+recorded-game.*
+
 # Byte-compiled / optimized / DLL files
 
 __pycache__/
