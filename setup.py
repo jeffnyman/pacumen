@@ -120,7 +120,9 @@ setup(
     packages=[
         'pacumen',
         'pacumen.mechanics',
-        'pacumen.library'
+        'pacumen.library',
+        'pacumen.displays',
+        'pacumen.rules'
     ],
     zip_safe=False,
     include_package_data=True,
