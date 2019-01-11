@@ -1,3 +1,7 @@
+import sys
+import inspect
+
+
 def manhattan_distance(xy1, xy2):
     """
     Returns the Manhattan distance between points xy1 and xy2. The Manhattan
@@ -25,3 +29,13 @@ def nearest_point(position):
     grid_col = int(current_col + 0.5)
 
     return grid_row, grid_col
+
+
+def raise_not_defined():
+    file_name = inspect.stack()[1][1]
+    line = inspect.stack()[1][2]
+    method = inspect.stack()[1][3]
+
+    print("*** Method not implemented: %s at line %s of %s" % (method, line, file_name))
+
+    sys.exit(1)
