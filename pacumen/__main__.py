@@ -108,6 +108,8 @@ def process_command(arguments):
 
 
 def load_agent(pacman, not_human):
+    sys.path.insert(0, os.getcwd())
+
     python_path_string = os.path.expandvars("$PYTHONPATH")
 
     if python_path_string.find(';') == -1:
@@ -116,9 +118,7 @@ def load_agent(pacman, not_human):
         python_path_dirs = python_path_string.split(';')
 
     # noinspection PyTypeChecker
-    python_path_dirs.append('.')
     python_path_dirs.append(os.getcwd())
-    python_path_dirs.append(os.getcwd() + "/agents")
 
     for module_dir in python_path_dirs:
         if not os.path.isdir(module_dir):
