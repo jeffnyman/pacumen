@@ -154,6 +154,11 @@ def lookup(name, namespace):
         raise Exception('%s not found as a method or class' % name)
 
 
+def pause():
+    print("<Press enter/return to continue>")
+    input()
+
+
 def raise_not_defined():
     file_name = inspect.stack()[1][1]
     line = inspect.stack()[1][2]

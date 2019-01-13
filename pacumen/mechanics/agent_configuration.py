@@ -21,6 +21,10 @@ class Configuration:
     def get_direction(self):
         return self.direction
 
+    def is_integer(self):
+        x, y = self.position
+        return x == int(x) and y == int(y)
+
     def __init__(self, position, direction):
         self.position = position
         self.direction = direction
