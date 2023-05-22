@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="https://github.com/jeffnyman/pacumen/blob/master/images/pacumen-title-bw-55.png" alt="Pacumen">
+    <img src="https://github.com/jeffnyman/pacumen/blob/master/images/pacumen-title-gd-55.png" alt="Pacumen">
     <img src="https://github.com/jeffnyman/pacumen/blob/master/images/pacumen-game.png" alt="Pac-Man Game Board">
 </h1>
 
